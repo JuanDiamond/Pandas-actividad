@@ -1,2 +1,3 @@
 # Pandas-actividad
-Tarea pandas
+Juan Nicolás González Zuluaga
+jgonzalezzu@unal.edu.co
