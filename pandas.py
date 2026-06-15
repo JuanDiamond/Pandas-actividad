@@ -1,48 +1,65 @@
 import pandas as pd
-df = pd.read_csv("peliculas.csv")
-nuevo_df = df[["titulo", "genero", "calificacion"]].copy()
 
-nuevo_df["clasica"] = df["anio"] < 1995
-def clasificar(calificacion):
+peliculas = pd.read_csv("peliculas.csv")
+
+resultado = peliculas[["titulo", "genero", "calificacion"]].copy()
+
+resultado["clasica"] = peliculas["anio"].apply(
+    lambda anio: "Si" if anio < 1995 else "No"
+)
+
+def obtener_apreciacion(calificacion):
+
     if calificacion > 8.5:
         return "Excelente"
+
     elif calificacion >= 7.0:
         return "Buena"
+
     elif calificacion >= 5.0:
         return "Regular"
+
     elif calificacion >= 3.0:
         return "Mala"
+
     else:
         return "Pesima"
 
-nuevo_df["Apreciacion"] = nuevo_df["calificacion"].apply(clasificar)
+resultado["Apreciacion"] = resultado["calificacion"].apply(
+    obtener_apreciacion
+)
 
-nuevo_df.to_csv("peliculas_transformadas.csv", index=False)
+resultado.to_csv(
+    "peliculas_transformadas.csv",
+    index=False
+)
 
-promedio_genero = (
-    df.groupby("genero")["calificacion"]
+promedio_por_genero = (
+    peliculas.groupby("genero")["calificacion"]
     .mean()
     .reset_index()
 )
 
-cantidad_genero = (
-    df.groupby("genero")
+cantidad_por_genero = (
+    peliculas.groupby("genero")
     .size()
     .reset_index(name="cantidad")
 )
 
-#Excel
-with pd.ExcelWriter("analisis_peliculas.xlsx") as writer:
-    promedio_genero.to_excel(
-        writer,
+with pd.ExcelWriter("analisis_peliculas.xlsx") as archivo_excel:
+
+    promedio_por_genero.to_excel(
+        archivo_excel,
         sheet_name="Promedios",
         index=False
     )
 
-    cantidad_genero.to_excel(
-        writer,
+    cantidad_por_genero.to_excel(
+        archivo_excel,
         sheet_name="Cantidades",
         index=False
     )
 
-print("Archivos generados correctamente.")
+print("Proceso finalizado correctamente.")
+print("Se generó peliculas_transformadas.csv")
+print("Se generó analisis_peliculas.xlsx")
